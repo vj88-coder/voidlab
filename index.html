@@ -663,6 +663,143 @@
             text-decoration: underline;
         }
 
+        /* File sharing */
+        .attach-btn {
+            background: var(--bg-2);
+            border: 1px solid var(--border);
+            color: var(--text-2);
+            padding: 10px 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s;
+        }
+
+        .attach-btn:hover {
+            border-color: var(--green);
+            color: var(--green);
+        }
+
+        .file-progress {
+            padding: 10px 0;
+            margin-bottom: 8px;
+        }
+
+        .file-progress-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 10px;
+            color: var(--text-2);
+            margin-bottom: 6px;
+        }
+
+        .file-progress-bar {
+            height: 3px;
+            background: var(--bg-2);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .file-progress-fill {
+            height: 100%;
+            background: var(--green);
+            width: 0%;
+            transition: width 0.2s;
+        }
+
+        /* File message */
+        .file-bubble {
+            display: inline-block;
+            max-width: 80%;
+            padding: 12px 14px;
+            background: var(--bg-2);
+            border: 1px solid var(--border);
+            text-align: left;
+        }
+
+        .msg.sent .file-bubble {
+            background: var(--green-dim);
+            border-color: rgba(0, 255, 136, 0.3);
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .file-icon {
+            width: 36px;
+            height: 36px;
+            background: var(--bg-3);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: var(--text-3);
+            text-transform: uppercase;
+            flex-shrink: 0;
+        }
+
+        .msg.sent .file-icon {
+            background: rgba(0, 255, 136, 0.1);
+            border-color: rgba(0, 255, 136, 0.2);
+        }
+
+        .file-details {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .file-name {
+            font-size: 12px;
+            color: var(--text-1);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .file-size {
+            font-size: 10px;
+            color: var(--text-3);
+        }
+
+        .file-download {
+            margin-top: 8px;
+        }
+
+        .file-download a {
+            font-size: 10px;
+            color: var(--green);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .file-download a:hover {
+            text-decoration: underline;
+        }
+
+        /* Image preview */
+        .img-bubble {
+            display: inline-block;
+            max-width: 70%;
+        }
+
+        .img-bubble img {
+            max-width: 100%;
+            max-height: 300px;
+            display: block;
+            border: 1px solid var(--border);
+        }
+
+        .msg.sent .img-bubble img {
+            border-color: rgba(0, 255, 136, 0.3);
+        }
+
         /* Loading */
         .spinner {
             display: inline-block;
@@ -702,7 +839,7 @@
                 <div class="home">
                     <div class="hero">
                         <h1>void://chat</h1>
-                        <p>P2P chiffré · Zero serveur · Zero trace</p>
+                        <p>Messages et fichiers · Chiffré · Zero serveur</p>
                     </div>
 
                     <div class="btn-stack">
@@ -739,7 +876,7 @@
                             </div>
                             <div class="exp-row">
                                 <span class="exp-icon">3</span>
-                                <span class="exp-text"><strong>Chiffrement local</strong> — Chaque message est chiffré dans ton navigateur avant d'être envoyé.</span>
+                                <span class="exp-text"><strong>Chiffrement local</strong> — Messages et fichiers sont chiffrés dans ton navigateur avant d'être envoyés.</span>
                             </div>
                         </div>
                     </div>
@@ -887,7 +1024,22 @@
         </main>
 
         <div class="input-area" id="inputArea" style="display:none;">
+            <div class="file-progress" id="fileProgress" style="display:none;">
+                <div class="file-progress-info">
+                    <span id="fileProgressName">fichier.pdf</span>
+                    <span id="fileProgressPercent">0%</span>
+                </div>
+                <div class="file-progress-bar">
+                    <div class="file-progress-fill" id="fileProgressFill"></div>
+                </div>
+            </div>
             <div class="input-wrap">
+                <button class="attach-btn" onclick="document.getElementById('fileInput').click()" title="Envoyer un fichier">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/>
+                    </svg>
+                </button>
+                <input type="file" id="fileInput" style="display:none;" onchange="handleFileSelect(event)" multiple>
                 <input type="text" class="msg-input" id="msgInput" placeholder="Message..." onkeypress="handleKey(event)" autocomplete="off">
                 <button class="send-btn" onclick="sendMsg()">↵</button>
             </div>
@@ -1163,7 +1315,11 @@
                 updateBadgeConnected();
             };
             p2p.onClose = () => addSys('Déconnecté');
-            p2p.onMsg = msg => addMsg(msg, false);
+            p2p.onMsg = msg => {
+                if (!handleIncomingMessage(msg)) {
+                    addMsg(msg, false);
+                }
+            };
 
             showView('createView');
             document.getElementById('offerCode').innerHTML = '<span class="spinner"></span> Génération...';
@@ -1213,7 +1369,11 @@
                 updateBadgeConnected();
             };
             p2p.onClose = () => addSys('Déconnecté');
-            p2p.onMsg = msg => addMsg(msg, false);
+            p2p.onMsg = msg => {
+                if (!handleIncomingMessage(msg)) {
+                    addMsg(msg, false);
+                }
+            };
 
             showView('joinView');
             document.getElementById('answerStep').style.display = 'none';
@@ -1290,6 +1450,216 @@
             const status = document.getElementById('securityStatus');
             badge.className = 'security-badge anonymous';
             status.textContent = 'Chiffré E2E';
+        }
+
+        // =============================================
+        // FILE SHARING
+        // =============================================
+
+        const CHUNK_SIZE = 16 * 1024; // 16KB chunks
+        let incomingFiles = {}; // Track incoming file transfers
+
+        async function handleFileSelect(event) {
+            const files = event.target.files;
+            if (!files.length || !p2p) return;
+
+            for (const file of files) {
+                await sendFile(file);
+            }
+            
+            event.target.value = ''; // Reset input
+        }
+
+        async function sendFile(file) {
+            const fileId = crypto.randomUUID();
+            const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
+            
+            // Show progress
+            showProgress(file.name, 0);
+
+            // Send file metadata first
+            const metadata = {
+                type: 'file-start',
+                id: fileId,
+                name: file.name,
+                size: file.size,
+                mimeType: file.type,
+                totalChunks: totalChunks
+            };
+            
+            await p2p.send(JSON.stringify(metadata));
+
+            // Read and send chunks
+            const reader = new FileReader();
+            let offset = 0;
+            let chunkIndex = 0;
+
+            const readNextChunk = () => {
+                const slice = file.slice(offset, offset + CHUNK_SIZE);
+                reader.readAsArrayBuffer(slice);
+            };
+
+            reader.onload = async (e) => {
+                const chunk = new Uint8Array(e.target.result);
+                const chunkB64 = Crypto.toB64(chunk.buffer);
+                
+                const chunkMsg = {
+                    type: 'file-chunk',
+                    id: fileId,
+                    index: chunkIndex,
+                    data: chunkB64
+                };
+                
+                await p2p.send(JSON.stringify(chunkMsg));
+                
+                chunkIndex++;
+                offset += CHUNK_SIZE;
+                
+                // Update progress
+                const progress = Math.round((chunkIndex / totalChunks) * 100);
+                showProgress(file.name, progress);
+                
+                if (offset < file.size) {
+                    readNextChunk();
+                } else {
+                    // Send completion message
+                    await p2p.send(JSON.stringify({
+                        type: 'file-end',
+                        id: fileId
+                    }));
+                    
+                    hideProgress();
+                    
+                    // Add to chat
+                    addFileMsg(file.name, file.size, file.type, null, true);
+                }
+            };
+
+            readNextChunk();
+        }
+
+        function handleIncomingMessage(data) {
+            try {
+                const msg = JSON.parse(data);
+                
+                if (msg.type === 'file-start') {
+                    // Initialize file reception
+                    incomingFiles[msg.id] = {
+                        name: msg.name,
+                        size: msg.size,
+                        mimeType: msg.mimeType,
+                        totalChunks: msg.totalChunks,
+                        chunks: [],
+                        received: 0
+                    };
+                    showProgress(msg.name, 0);
+                    return true;
+                }
+                
+                if (msg.type === 'file-chunk') {
+                    const file = incomingFiles[msg.id];
+                    if (!file) return true;
+                    
+                    file.chunks[msg.index] = Crypto.fromB64(msg.data);
+                    file.received++;
+                    
+                    const progress = Math.round((file.received / file.totalChunks) * 100);
+                    showProgress(file.name, progress);
+                    return true;
+                }
+                
+                if (msg.type === 'file-end') {
+                    const file = incomingFiles[msg.id];
+                    if (!file) return true;
+                    
+                    // Reassemble file
+                    const totalSize = file.chunks.reduce((acc, chunk) => acc + chunk.byteLength, 0);
+                    const assembled = new Uint8Array(totalSize);
+                    let offset = 0;
+                    
+                    for (const chunk of file.chunks) {
+                        assembled.set(new Uint8Array(chunk), offset);
+                        offset += chunk.byteLength;
+                    }
+                    
+                    // Create blob and download URL
+                    const blob = new Blob([assembled], { type: file.mimeType });
+                    const url = URL.createObjectURL(blob);
+                    
+                    hideProgress();
+                    addFileMsg(file.name, file.size, file.mimeType, url, false);
+                    
+                    delete incomingFiles[msg.id];
+                    return true;
+                }
+                
+                return false; // Not a file message
+            } catch {
+                return false; // Not JSON, treat as text
+            }
+        }
+
+        function showProgress(name, percent) {
+            const el = document.getElementById('fileProgress');
+            const nameEl = document.getElementById('fileProgressName');
+            const percentEl = document.getElementById('fileProgressPercent');
+            const fillEl = document.getElementById('fileProgressFill');
+            
+            el.style.display = 'block';
+            nameEl.textContent = name.length > 30 ? name.slice(0, 27) + '...' : name;
+            percentEl.textContent = percent + '%';
+            fillEl.style.width = percent + '%';
+        }
+
+        function hideProgress() {
+            document.getElementById('fileProgress').style.display = 'none';
+        }
+
+        function addFileMsg(name, size, mimeType, url, sent) {
+            const c = document.getElementById('messages');
+            const time = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+            const ext = name.split('.').pop() || '?';
+            const sizeStr = formatSize(size);
+            const isImage = mimeType && mimeType.startsWith('image/');
+            
+            const div = document.createElement('div');
+            div.className = 'msg' + (sent ? ' sent' : '');
+            
+            if (isImage && url) {
+                div.innerHTML = `
+                    <div class="img-bubble">
+                        <img src="${url}" alt="${esc(name)}">
+                        <div class="file-download">
+                            <a href="${url}" download="${esc(name)}">↓ Télécharger (${sizeStr})</a>
+                        </div>
+                    </div>
+                    <div class="msg-time">${time}</div>
+                `;
+            } else {
+                div.innerHTML = `
+                    <div class="file-bubble">
+                        <div class="file-info">
+                            <div class="file-icon">${esc(ext)}</div>
+                            <div class="file-details">
+                                <div class="file-name">${esc(name)}</div>
+                                <div class="file-size">${sizeStr}</div>
+                            </div>
+                        </div>
+                        ${url ? `<div class="file-download"><a href="${url}" download="${esc(name)}">↓ Télécharger</a></div>` : ''}
+                    </div>
+                    <div class="msg-time">${time}</div>
+                `;
+            }
+            
+            c.appendChild(div);
+            c.scrollTop = c.scrollHeight;
+        }
+
+        function formatSize(bytes) {
+            if (bytes < 1024) return bytes + ' o';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' Ko';
+            if (bytes < 1024 * 1024 * 1024) return (bytes / (1024 * 1024)).toFixed(1) + ' Mo';
+            return (bytes / (1024 * 1024 * 1024)).toFixed(1) + ' Go';
         }
 
         // =============================================
