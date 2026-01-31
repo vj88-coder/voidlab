@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VOID - Secure P2P Chat</title>
+    <title>VOID — Secure P2P Chat</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -1456,7 +1456,8 @@
         // FILE SHARING
         // =============================================
 
-        const CHUNK_SIZE = 16 * 1024; // 16KB chunks
+        const CHUNK_SIZE = 64 * 1024; // 64KB chunks
+        const MAX_BUFFER = 256 * 1024; // 256KB max buffer before waiting
         let incomingFiles = {}; // Track incoming file transfers
 
         async function handleFileSelect(event) {
@@ -1489,53 +1490,67 @@
             
             await p2p.send(JSON.stringify(metadata));
 
-            // Read and send chunks
-            const reader = new FileReader();
-            let offset = 0;
-            let chunkIndex = 0;
+            // Read file as array buffer
+            const arrayBuffer = await file.arrayBuffer();
+            const uint8Array = new Uint8Array(arrayBuffer);
 
-            const readNextChunk = () => {
-                const slice = file.slice(offset, offset + CHUNK_SIZE);
-                reader.readAsArrayBuffer(slice);
-            };
-
-            reader.onload = async (e) => {
-                const chunk = new Uint8Array(e.target.result);
+            // Send chunks with flow control
+            for (let i = 0; i < totalChunks; i++) {
+                const start = i * CHUNK_SIZE;
+                const end = Math.min(start + CHUNK_SIZE, file.size);
+                const chunk = uint8Array.slice(start, end);
                 const chunkB64 = Crypto.toB64(chunk.buffer);
                 
                 const chunkMsg = {
                     type: 'file-chunk',
                     id: fileId,
-                    index: chunkIndex,
+                    index: i,
                     data: chunkB64
                 };
                 
+                // Wait for buffer to drain if needed
+                await waitForBuffer(p2p.dc);
+                
                 await p2p.send(JSON.stringify(chunkMsg));
                 
-                chunkIndex++;
-                offset += CHUNK_SIZE;
-                
                 // Update progress
-                const progress = Math.round((chunkIndex / totalChunks) * 100);
+                const progress = Math.round(((i + 1) / totalChunks) * 100);
                 showProgress(file.name, progress);
-                
-                if (offset < file.size) {
-                    readNextChunk();
-                } else {
-                    // Send completion message
-                    await p2p.send(JSON.stringify({
-                        type: 'file-end',
-                        id: fileId
-                    }));
-                    
-                    hideProgress();
-                    
-                    // Add to chat
-                    addFileMsg(file.name, file.size, file.type, null, true);
-                }
-            };
+            }
 
-            readNextChunk();
+            // Send completion message
+            await p2p.send(JSON.stringify({
+                type: 'file-end',
+                id: fileId
+            }));
+            
+            hideProgress();
+            
+            // Add to chat
+            addFileMsg(file.name, file.size, file.type, null, true);
+        }
+
+        function waitForBuffer(dataChannel) {
+            return new Promise((resolve) => {
+                if (!dataChannel || dataChannel.bufferedAmount <= MAX_BUFFER) {
+                    resolve();
+                    return;
+                }
+                
+                const checkBuffer = () => {
+                    if (!dataChannel || dataChannel.readyState !== 'open') {
+                        resolve();
+                        return;
+                    }
+                    if (dataChannel.bufferedAmount <= MAX_BUFFER) {
+                        resolve();
+                    } else {
+                        setTimeout(checkBuffer, 50);
+                    }
+                };
+                
+                checkBuffer();
+            });
         }
 
         function handleIncomingMessage(data) {
