@@ -745,54 +745,6 @@
                     </div>
 
                     <div class="info-panel">
-                        <h3>Comparé aux autres</h3>
-                        <div class="compare">
-                            <div class="compare-item">
-                                <div class="compare-header">
-                                    <span class="compare-name">WhatsApp</span>
-                                    <span class="compare-verdict partial">Chiffré, mais...</span>
-                                </div>
-                                <p>Messages chiffrés, oui. Mais Meta collecte qui parle à qui, quand, combien de fois. Ces métadonnées valent de l'or.</p>
-                            </div>
-                            <div class="compare-item">
-                                <div class="compare-header">
-                                    <span class="compare-name">Telegram</span>
-                                    <span class="compare-verdict bad">Pas chiffré par défaut</span>
-                                </div>
-                                <p>Les "secret chats" sont chiffrés. Les conversations normales ? Telegram peut les lire.</p>
-                            </div>
-                            <div class="compare-item">
-                                <div class="compare-header">
-                                    <span class="compare-name">Signal</span>
-                                    <span class="compare-verdict good">Excellent</span>
-                                </div>
-                                <p>Le gold standard. Mais : nécessite ton numéro de téléphone, et passe par leurs serveurs (même s'ils ne voient rien).</p>
-                            </div>
-                            <div class="compare-item">
-                                <div class="compare-header">
-                                    <span class="compare-name">Discord</span>
-                                    <span class="compare-verdict bad">Zero chiffrement</span>
-                                </div>
-                                <p>Tout est lisible par Discord. Tes DMs, tes serveurs, tout.</p>
-                            </div>
-                            <div class="compare-item">
-                                <div class="compare-header">
-                                    <span class="compare-name">iMessage</span>
-                                    <span class="compare-verdict partial">Dépend de tes réglages</span>
-                                </div>
-                                <p>Chiffré, sauf si tu actives iCloud backup. Dans ce cas, Apple a une copie lisible.</p>
-                            </div>
-                            <div class="compare-item ours">
-                                <div class="compare-header">
-                                    <span class="compare-name">VOID</span>
-                                    <span class="compare-verdict good">Zero serveur</span>
-                                </div>
-                                <p>Pas de serveur = pas de métadonnées = rien à collecter. Le message va directement de toi à ton contact.</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="info-panel">
                         <h3>Ce qu'on ne cache pas</h3>
                         <p class="honest">Ton contact voit ton adresse IP. C'est inhérent au P2P : pour se connecter directement, il faut savoir où envoyer les données. Si tu veux masquer ton IP aussi, utilise <a href="https://www.torproject.org/download/" target="_blank">Tor Browser</a>.</p>
                     </div>
@@ -804,6 +756,54 @@
                             <div class="toggle" id="paranoidToggle" onclick="toggleParanoid()"></div>
                         </div>
                         <p class="helper" style="margin-top:8px;">Active ce mode, puis ouvre la page dans Tor Browser. Ton IP sera masquée même pour ton contact.</p>
+                    </div>
+
+                    <div class="info-panel">
+                        <h3>Comparé aux autres</h3>
+                        <div class="compare">
+                            <div class="compare-item ours">
+                                <div class="compare-header">
+                                    <span class="compare-name">VOID</span>
+                                    <span class="compare-verdict good">Zero serveur</span>
+                                </div>
+                                <p>Pas de serveur = pas de métadonnées = rien à collecter. Le message va directement de toi à ton contact.</p>
+                            </div>
+                            <div class="compare-item">
+                                <div class="compare-header">
+                                    <span class="compare-name">Signal</span>
+                                    <span class="compare-verdict good">Excellent</span>
+                                </div>
+                                <p>Le gold standard. Mais : nécessite ton numéro de téléphone, et passe par leurs serveurs (même s'ils ne voient rien).</p>
+                            </div>
+                            <div class="compare-item">
+                                <div class="compare-header">
+                                    <span class="compare-name">WhatsApp</span>
+                                    <span class="compare-verdict partial">Chiffré, mais...</span>
+                                </div>
+                                <p>Messages chiffrés, oui. Mais Meta collecte qui parle à qui, quand, combien de fois. Ces métadonnées valent de l'or.</p>
+                            </div>
+                            <div class="compare-item">
+                                <div class="compare-header">
+                                    <span class="compare-name">iMessage</span>
+                                    <span class="compare-verdict partial">Dépend de tes réglages</span>
+                                </div>
+                                <p>Chiffré, sauf si tu actives iCloud backup. Dans ce cas, Apple a une copie lisible.</p>
+                            </div>
+                            <div class="compare-item">
+                                <div class="compare-header">
+                                    <span class="compare-name">Telegram</span>
+                                    <span class="compare-verdict bad">Pas chiffré par défaut</span>
+                                </div>
+                                <p>Les "secret chats" sont chiffrés. Les conversations normales ? Telegram peut les lire.</p>
+                            </div>
+                            <div class="compare-item">
+                                <div class="compare-header">
+                                    <span class="compare-name">Discord</span>
+                                    <span class="compare-verdict bad">Zero chiffrement</span>
+                                </div>
+                                <p>Tout est lisible par Discord. Tes DMs, tes serveurs, tout.</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
