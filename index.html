@@ -3,1968 +3,481 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Whisper</title>
-    <meta name="description" content="Messagerie chiffrée pair-à-pair. Aucun serveur. Aucune trace.">
+    <title>VoidLab — Outils chiffrés, libres et gratuits</title>
+    <meta name="description" content="Suite d'outils gratuits avec chiffrement de bout en bout. Aucun serveur. Aucun compte. Aucune trace. Souveraineté numérique française.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://voidlab.app">
+    
+    <!-- OpenGraph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://voidlab.app">
+    <meta property="og:title" content="VoidLab — Outils chiffrés, libres et gratuits">
+    <meta property="og:description" content="Suite d'outils gratuits avec chiffrement de bout en bout. Aucun serveur. Aucun compte. Aucune trace.">
+    <meta property="og:image" content="https://voidlab.app/og.png">
+    <meta property="og:locale" content="fr_FR">
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="VoidLab — Outils chiffrés">
+    <meta name="twitter:description" content="Chiffrement de bout en bout. Aucun serveur. Aucune trace.">
+    
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%23000' width='100' height='100'/><rect fill='%2322c55e' x='40' y='40' width='20' height='20'/></svg>">
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Archivo:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
     <style>
-        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
         
         :root {
-            --black: #0d0d0d;
-            --white: #fefefe;
-            --gray-50: #f7f7f7;
-            --gray-100: #ebebeb;
-            --gray-200: #d4d4d4;
-            --gray-400: #8f8f8f;
-            --gray-600: #525252;
-            --gray-800: #262626;
-            --green: #16a34a;
-            --green-bg: #dcfce7;
-            --red: #dc2626;
-            --amber: #d97706;
+            --black: #0a0a0a;
+            --white: #e8e8e8;
+            --gray-1: #141414;
+            --gray-2: #1f1f1f;
+            --gray-3: #333;
+            --gray-4: #666;
+            --gray-5: #999;
+            --green: #22c55e;
         }
-
-        html { font-size: 16px; scroll-behavior: smooth; }
-
+        
+        html {
+            font-size: 16px;
+        }
+        
         body {
-            font-family: 'Archivo', system-ui, sans-serif;
-            line-height: 1.6;
-            color: var(--black);
-            background: var(--white);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--black);
+            color: var(--white);
+            line-height: 1.5;
             -webkit-font-smoothing: antialiased;
-            min-height: 100vh;
-            min-height: 100dvh;
         }
-
-        /* Layout */
-        .page { min-height: 100vh; display: flex; flex-direction: column; }
-        .page.chat-active { height: 100vh; height: 100dvh; overflow: hidden; }
-
-        /* Navigation */
-        nav {
-            position: sticky;
-            top: 0;
-            z-index: 50;
-            background: var(--white);
-            border-bottom: 1px solid var(--gray-100);
+        
+        ::selection {
+            background: var(--green);
+            color: var(--black);
         }
-
-        .nav-inner {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 24px;
-            height: 64px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            text-decoration: none;
+        
+        a {
             color: inherit;
-        }
-
-        .logo-mark {
-            width: 36px;
-            height: 36px;
-            background: var(--black);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .logo-mark svg { width: 20px; height: 20px; color: var(--white); }
-
-        .logo-text {
-            font-family: 'Fraunces', Georgia, serif;
-            font-size: 22px;
-            font-weight: 500;
-            letter-spacing: -0.02em;
-        }
-
-        .nav-status {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 13px;
-            font-weight: 500;
-            color: var(--gray-600);
-        }
-
-        .nav-status svg {
-            width: 14px;
-            height: 14px;
-            color: var(--green);
-        }
-
-        .nav-status.pending { color: var(--amber); }
-        .nav-status.pending svg { color: var(--amber); }
-
-        /* Hero */
-        .hero {
-            padding: 80px 24px 100px;
-            text-align: center;
-            border-bottom: 1px solid var(--gray-100);
-        }
-
-        @media (min-width: 768px) {
-            .hero { padding: 120px 24px 140px; }
-        }
-
-        .hero-inner {
-            max-width: 720px;
-            margin: 0 auto;
-        }
-
-        .hero h1 {
-            font-family: 'Fraunces', Georgia, serif;
-            font-size: clamp(36px, 6vw, 56px);
-            font-weight: 500;
-            letter-spacing: -0.03em;
-            line-height: 1.1;
-            margin-bottom: 20px;
-        }
-
-        .hero-sub {
-            font-size: clamp(17px, 2.2vw, 20px);
-            color: var(--gray-600);
-            max-width: 520px;
-            margin: 0 auto 40px;
-        }
-
-        .hero-actions {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            max-width: 340px;
-            margin: 0 auto;
-        }
-
-        @media (min-width: 480px) {
-            .hero-actions {
-                flex-direction: row;
-                max-width: 420px;
-            }
-        }
-
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            padding: 16px 28px;
-            font-family: inherit;
-            font-size: 15px;
-            font-weight: 500;
             text-decoration: none;
-            border: none;
-            cursor: pointer;
-            transition: background 0.15s, transform 0.1s;
         }
-
-        .btn:active { transform: scale(0.98); }
-        .btn svg { width: 18px; height: 18px; }
-
-        .btn-black {
-            background: var(--black);
-            color: var(--white);
-            flex: 1;
-        }
-
-        .btn-black:hover { background: var(--gray-800); }
-
-        .btn-outline {
-            background: transparent;
-            color: var(--black);
-            border: 2px solid var(--black);
-            flex: 1;
-        }
-
-        .btn-outline:hover { background: var(--gray-50); }
-
-        /* Security Banner */
-        .security-banner {
-            background: var(--gray-50);
-            border-bottom: 1px solid var(--gray-100);
-        }
-
-        .security-inner {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 16px 24px;
+        
+        /* Header */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            padding: 24px 32px;
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            justify-content: center;
-            gap: 12px;
-            font-size: 14px;
-            color: var(--gray-600);
         }
-
-        .security-inner svg {
-            width: 16px;
-            height: 16px;
-            color: var(--green);
-            flex-shrink: 0;
-        }
-
-        .security-inner a {
-            color: var(--black);
-            font-weight: 500;
-        }
-
-        /* Main Content Grid */
-        .content {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 24px;
-        }
-
-        .grid-section {
-            display: grid;
-            gap: 1px;
-            background: var(--gray-100);
-            border-bottom: 1px solid var(--gray-100);
-        }
-
-        @media (min-width: 768px) {
-            .grid-section { grid-template-columns: 1fr 1fr; }
-            .grid-section.three-col { grid-template-columns: repeat(3, 1fr); }
-        }
-
-        .grid-item {
-            background: var(--white);
-            padding: 40px 32px;
-        }
-
-        @media (min-width: 768px) {
-            .grid-item { padding: 56px 48px; }
-        }
-
-        .grid-item h3 {
-            font-family: 'Fraunces', Georgia, serif;
-            font-size: 20px;
-            font-weight: 500;
-            margin-bottom: 12px;
-        }
-
-        .grid-item p {
-            color: var(--gray-600);
-            font-size: 15px;
-            line-height: 1.65;
-        }
-
-        /* Protocol Section */
-        .protocol-section {
-            padding: 80px 24px;
-            background: var(--black);
-            color: var(--white);
-        }
-
-        .protocol-inner {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .protocol-header {
-            max-width: 600px;
-            margin-bottom: 56px;
-        }
-
-        .protocol-header h2 {
-            font-family: 'Fraunces', Georgia, serif;
-            font-size: clamp(28px, 4vw, 36px);
-            font-weight: 500;
+        
+        .wordmark {
+            font-family: 'Instrument Serif', Georgia, serif;
+            font-size: 22px;
             letter-spacing: -0.02em;
-            margin-bottom: 16px;
         }
-
-        .protocol-header p {
-            color: var(--gray-400);
-            font-size: 17px;
-        }
-
-        .protocol-grid {
-            display: grid;
-            gap: 24px;
-        }
-
-        @media (min-width: 768px) {
-            .protocol-grid { grid-template-columns: repeat(2, 1fr); }
-        }
-
-        @media (min-width: 1024px) {
-            .protocol-grid { grid-template-columns: repeat(4, 1fr); }
-        }
-
-        .protocol-card {
-            padding: 28px;
-            border: 1px solid var(--gray-800);
-        }
-
-        .protocol-label {
+        
+        .status {
             font-size: 11px;
-            font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.1em;
-            color: var(--gray-400);
-            margin-bottom: 8px;
-        }
-
-        .protocol-value {
-            font-family: 'IBM Plex Mono', monospace;
-            font-size: 14px;
-            color: var(--white);
-            margin-bottom: 12px;
-        }
-
-        .protocol-desc {
-            font-size: 13px;
-            color: var(--gray-400);
-            line-height: 1.5;
-        }
-
-        /* Verification Section */
-        .verify-section {
-            padding: 64px 24px;
-            border-bottom: 1px solid var(--gray-100);
-        }
-
-        .verify-inner {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .verify-header {
-            text-align: center;
-            margin-bottom: 48px;
-        }
-
-        .verify-header h2 {
-            font-family: 'Fraunces', Georgia, serif;
-            font-size: clamp(24px, 3.5vw, 32px);
-            font-weight: 500;
-            margin-bottom: 12px;
-        }
-
-        .verify-header p {
-            color: var(--gray-600);
-            font-size: 16px;
-        }
-
-        .verify-steps {
-            display: flex;
-            flex-direction: column;
-            gap: 32px;
-        }
-
-        @media (min-width: 640px) {
-            .verify-steps {
-                flex-direction: row;
-                gap: 48px;
-            }
-        }
-
-        .verify-step {
-            flex: 1;
-        }
-
-        .verify-num {
-            width: 32px;
-            height: 32px;
-            background: var(--black);
-            color: var(--white);
-            font-weight: 600;
-            font-size: 14px;
+            color: var(--gray-4);
             display: flex;
             align-items: center;
-            justify-content: center;
-            margin-bottom: 16px;
+            gap: 8px;
         }
-
-        .verify-step h4 {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 8px;
+        
+        .status::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: var(--green);
+            display: block;
         }
-
-        .verify-step p {
+        
+        /* Main */
+        main {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Intro */
+        .intro {
+            padding: 160px 32px 120px;
+            max-width: 900px;
+        }
+        
+        .intro h1 {
+            font-family: 'Instrument Serif', Georgia, serif;
+            font-size: clamp(40px, 7vw, 68px);
+            font-weight: 400;
+            line-height: 1.08;
+            letter-spacing: -0.03em;
+            margin-bottom: 28px;
+        }
+        
+        .intro h1 em {
+            font-style: italic;
+        }
+        
+        .intro-text {
+            font-size: 17px;
+            color: var(--gray-5);
+            max-width: 520px;
+            margin-bottom: 40px;
+        }
+        
+        .intro-links {
+            display: flex;
+            gap: 28px;
+        }
+        
+        .intro-links a {
             font-size: 14px;
-            color: var(--gray-600);
-            line-height: 1.6;
+            color: var(--white);
+            padding-bottom: 3px;
+            border-bottom: 1px solid var(--gray-3);
+            transition: border-color 0.15s;
         }
-
-        /* Comparison */
-        .compare-section {
-            padding: 64px 24px;
-            border-bottom: 1px solid var(--gray-100);
+        
+        .intro-links a:hover {
+            border-color: var(--white);
         }
-
-        .compare-inner {
-            max-width: 780px;
-            margin: 0 auto;
+        
+        /* Tools */
+        .tools {
+            border-top: 1px solid var(--gray-2);
         }
-
-        .compare-table {
-            width: 100%;
-            border-collapse: collapse;
+        
+        .tool {
+            display: grid;
+            grid-template-columns: 1fr;
+            border-bottom: 1px solid var(--gray-2);
+            transition: background 0.15s;
+        }
+        
+        @media (min-width: 800px) {
+            .tool {
+                grid-template-columns: 180px 1fr auto;
+                align-items: center;
+            }
+        }
+        
+        .tool:hover {
+            background: var(--gray-1);
+        }
+        
+        .tool-name {
+            padding: 28px 32px;
+            font-family: 'Instrument Serif', Georgia, serif;
+            font-size: 22px;
+        }
+        
+        .tool-desc {
+            padding: 0 32px 28px;
+            color: var(--gray-4);
             font-size: 14px;
         }
-
-        .compare-table th,
-        .compare-table td {
-            padding: 16px 12px;
-            text-align: left;
-            border-bottom: 1px solid var(--gray-100);
+        
+        @media (min-width: 800px) {
+            .tool-desc {
+                padding: 28px 32px;
+                border-left: 1px solid var(--gray-2);
+            }
         }
-
-        .compare-table th {
-            font-weight: 500;
-            color: var(--gray-400);
+        
+        .tool-action {
+            padding: 28px 32px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
             font-size: 12px;
             text-transform: uppercase;
             letter-spacing: 0.05em;
         }
-
-        .compare-table th:not(:first-child),
-        .compare-table td:not(:first-child) {
-            text-align: center;
-            width: 70px;
+        
+        .tool-action.live {
+            color: var(--green);
         }
-
-        @media (max-width: 540px) {
-            .compare-table th:not(:first-child),
-            .compare-table td:not(:first-child) {
-                width: 54px;
-                font-size: 12px;
-                padding: 12px 6px;
+        
+        .tool-action.soon {
+            color: var(--gray-4);
+        }
+        
+        .tool-action svg {
+            width: 14px;
+            height: 14px;
+        }
+        
+        /* Protocol */
+        .protocol {
+            padding: 80px 32px;
+            border-top: 1px solid var(--gray-2);
+        }
+        
+        .section-title {
+            font-family: 'Instrument Serif', Georgia, serif;
+            font-size: 12px;
+            font-weight: 400;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--gray-4);
+            margin-bottom: 12px;
+        }
+        
+        .section-desc {
+            font-size: 14px;
+            color: var(--gray-5);
+            max-width: 440px;
+            margin-bottom: 48px;
+        }
+        
+        .specs {
+            display: grid;
+            gap: 1px;
+            background: var(--gray-2);
+        }
+        
+        @media (min-width: 800px) {
+            .specs {
+                grid-template-columns: repeat(4, 1fr);
             }
         }
-
-        .compare-table tbody tr:first-child {
-            background: var(--green-bg);
-            font-weight: 500;
+        
+        .spec {
+            background: var(--black);
+            padding: 24px;
         }
-
-        .compare-table .yes { color: var(--green); }
-        .compare-table .no { color: var(--red); }
-        .compare-table .partial { color: var(--amber); }
-
-        .compare-table sup {
+        
+        .spec-label {
             font-size: 10px;
-            color: var(--gray-400);
-        }
-
-        .compare-footnotes {
-            margin-top: 24px;
-            padding-top: 20px;
-            border-top: 1px solid var(--gray-100);
-        }
-
-        .compare-footnotes p {
-            font-size: 12px;
-            color: var(--gray-500);
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--gray-4);
             margin-bottom: 6px;
-            line-height: 1.5;
         }
-
-        .compare-footnotes p:last-child { margin-bottom: 0; }
-        .compare-footnotes sup { color: var(--gray-400); margin-right: 4px; }
-
-        /* Note */
-        .note-section {
-            padding: 48px 24px;
-            background: var(--gray-50);
-            border-bottom: 1px solid var(--gray-100);
+        
+        .spec-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: var(--white);
+            margin-bottom: 12px;
         }
-
-        .note-inner {
-            max-width: 720px;
-            margin: 0 auto;
-            font-size: 14px;
-            color: var(--gray-600);
-            line-height: 1.7;
+        
+        .spec-note {
+            font-size: 12px;
+            color: var(--gray-4);
+            line-height: 1.45;
         }
-
-        .note-inner strong { color: var(--black); }
-
-        .note-inner a {
-            color: var(--black);
-            font-weight: 500;
+        
+        /* Principles */
+        .principles {
+            padding: 80px 32px;
+            border-top: 1px solid var(--gray-2);
         }
-
+        
+        .principles-grid {
+            display: grid;
+            gap: 40px;
+            margin-top: 48px;
+        }
+        
+        @media (min-width: 800px) {
+            .principles-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 32px;
+            }
+        }
+        
+        .principle h3 {
+            font-family: 'Instrument Serif', Georgia, serif;
+            font-size: 18px;
+            font-weight: 400;
+            margin-bottom: 10px;
+        }
+        
+        .principle p {
+            font-size: 13px;
+            color: var(--gray-4);
+            line-height: 1.55;
+        }
+        
         /* Footer */
         footer {
-            padding: 40px 24px;
-            text-align: center;
-            font-size: 13px;
-            color: var(--gray-400);
-        }
-
-        footer a {
-            color: var(--gray-600);
-            text-decoration: none;
-        }
-
-        /* Setup Screens */
-        .setup-screen {
-            display: none;
-            padding: 48px 24px 80px;
-        }
-
-        .setup-screen.active { display: block; }
-
-        .setup-inner {
-            max-width: 520px;
-            margin: 0 auto;
-        }
-
-        .setup-back {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 14px;
-            color: var(--gray-600);
-            text-decoration: none;
-            margin-bottom: 32px;
-            cursor: pointer;
-        }
-
-        .setup-back:hover { color: var(--black); }
-        .setup-back svg { width: 16px; height: 16px; }
-
-        .setup-header {
-            margin-bottom: 40px;
-        }
-
-        .setup-header h2 {
-            font-family: 'Fraunces', Georgia, serif;
-            font-size: 28px;
-            font-weight: 500;
-            margin-bottom: 8px;
-        }
-
-        .setup-header p {
-            color: var(--gray-600);
-            font-size: 16px;
-        }
-
-        .setup-step {
-            margin-bottom: 32px;
-        }
-
-        .step-label {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 14px;
-        }
-
-        .step-num {
-            width: 28px;
-            height: 28px;
-            background: var(--black);
-            color: var(--white);
-            font-size: 13px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .step-title {
-            font-size: 15px;
-            font-weight: 600;
-        }
-
-        .code-display {
-            background: var(--black);
-            padding: 20px;
-            font-family: 'IBM Plex Mono', monospace;
-            font-size: 11px;
-            color: var(--gray-400);
-            word-break: break-all;
-            line-height: 1.7;
-            max-height: 140px;
-            overflow-y: auto;
-        }
-
-        .code-display.loading {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100px;
-        }
-
-        textarea.field {
-            width: 100%;
-            padding: 16px;
-            background: var(--white);
-            border: 2px solid var(--gray-200);
-            font-family: 'IBM Plex Mono', monospace;
-            font-size: 13px;
-            color: var(--black);
-            resize: none;
-            min-height: 120px;
-            outline: none;
-            transition: border-color 0.15s;
-        }
-
-        textarea.field:focus { border-color: var(--black); }
-        textarea.field::placeholder { color: var(--gray-400); }
-
-        .btn-row {
-            display: flex;
-            gap: 12px;
-            margin-top: 16px;
-        }
-
-        .btn-row .btn { flex: 1; padding: 14px 20px; }
-
-        .alert-box {
-            display: flex;
-            gap: 14px;
-            margin-top: 32px;
-            padding: 20px;
-            background: #fef9c3;
-            border-left: 4px solid var(--amber);
-            font-size: 14px;
-            color: #713f12;
-            line-height: 1.6;
-        }
-
-        .alert-box svg {
-            width: 20px;
-            height: 20px;
-            color: var(--amber);
-            flex-shrink: 0;
-        }
-
-        /* Chat Screen */
-        .chat-screen {
-            display: none;
-            flex-direction: column;
-            height: calc(100vh - 65px);
-            height: calc(100dvh - 65px);
-        }
-
-        .chat-screen.active { display: flex; }
-
-        .chat-container {
-            max-width: 720px;
-            width: 100%;
-            margin: 0 auto;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        .chat-info {
-            padding: 16px 24px;
-            background: var(--green-bg);
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-
-        .chat-info-icon {
-            width: 44px;
-            height: 44px;
-            background: var(--white);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .chat-info-icon svg { width: 22px; height: 22px; color: var(--green); }
-
-        .chat-info-text { flex: 1; }
-
-        .chat-info-title {
-            font-size: 14px;
-            font-weight: 600;
-            color: #14532d;
-        }
-
-        .chat-info-sub {
-            font-size: 12px;
-            color: var(--gray-600);
-        }
-
-        .chat-verify {
-            padding: 10px 16px;
-            background: var(--white);
-            border: 1px solid var(--gray-200);
-            font-family: inherit;
-            font-size: 12px;
-            font-weight: 500;
-            color: var(--gray-600);
-            cursor: pointer;
-        }
-
-        .chat-verify:hover { border-color: var(--black); color: var(--black); }
-
-        .chat-messages {
-            flex: 1;
-            overflow-y: auto;
-            padding: 24px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        .msg {
-            max-width: 75%;
-        }
-
-        .msg.sent { align-self: flex-end; }
-
-        .msg-bubble {
-            padding: 12px 16px;
-            font-size: 15px;
-            line-height: 1.5;
-        }
-
-        .msg:not(.sent) .msg-bubble {
-            background: var(--gray-50);
-            border: 1px solid var(--gray-100);
-        }
-
-        .msg.sent .msg-bubble {
-            background: var(--black);
-            color: var(--white);
-        }
-
-        .msg-time {
-            font-size: 11px;
-            color: var(--gray-400);
-            margin-top: 4px;
-            padding: 0 4px;
-        }
-
-        .msg.sent .msg-time { text-align: right; }
-
-        .msg-system {
-            align-self: center;
-            padding: 8px 16px;
-            background: var(--gray-50);
-            font-size: 12px;
-            color: var(--gray-600);
-        }
-
-        /* File messages */
-        .msg-file {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            padding: 14px 16px;
-            background: var(--gray-50);
-            border: 1px solid var(--gray-100);
-            max-width: 280px;
-        }
-
-        .msg.sent .msg-file {
-            background: var(--gray-800);
-            border-color: var(--gray-800);
-        }
-
-        .file-icon {
-            width: 44px;
-            height: 44px;
-            background: var(--white);
-            border: 1px solid var(--gray-200);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: 'IBM Plex Mono', monospace;
-            font-size: 10px;
-            font-weight: 500;
-            color: var(--gray-400);
-            text-transform: uppercase;
-        }
-
-        .msg.sent .file-icon {
-            background: var(--gray-700);
-            border-color: var(--gray-700);
-            color: var(--gray-400);
-        }
-
-        .file-info { flex: 1; min-width: 0; }
-
-        .file-name {
-            font-size: 14px;
-            font-weight: 500;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .msg.sent .file-name { color: var(--white); }
-
-        .file-size {
-            font-size: 12px;
-            color: var(--gray-400);
-        }
-
-        .file-dl { margin-top: 4px; }
-
-        .file-dl a {
-            font-size: 13px;
-            font-weight: 500;
-            color: var(--black);
-            text-decoration: none;
-        }
-
-        .msg.sent .file-dl a { color: var(--gray-200); }
-
-        .msg-img img {
-            max-width: 240px;
-            max-height: 240px;
-            display: block;
-        }
-
-        /* Chat Input */
-        .chat-input {
-            padding: 16px 24px 24px;
-            background: var(--white);
-            border-top: 1px solid var(--gray-100);
-        }
-
-        .chat-input-inner {
-            max-width: 720px;
-            margin: 0 auto;
-        }
-
-        .upload-bar {
-            margin-bottom: 12px;
-            padding: 12px 16px;
-            background: var(--gray-50);
-            display: none;
-        }
-
-        .upload-bar.active { display: block; }
-
-        .upload-info {
+            margin-top: auto;
+            padding: 40px 32px;
+            border-top: 1px solid var(--gray-2);
             display: flex;
             justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .footer-left {
             font-size: 12px;
-            color: var(--gray-600);
-            margin-bottom: 8px;
+            color: var(--gray-4);
         }
-
-        .upload-progress {
-            height: 3px;
-            background: var(--gray-200);
-        }
-
-        .upload-fill {
-            height: 100%;
-            background: var(--green);
-            width: 0%;
-            transition: width 60ms linear;
-        }
-
-        .input-row {
+        
+        .footer-links {
             display: flex;
-            gap: 12px;
-            align-items: flex-end;
+            gap: 24px;
         }
-
-        .attach-btn {
-            width: 48px;
-            height: 48px;
-            background: var(--gray-50);
-            border: 1px solid var(--gray-200);
-            color: var(--gray-600);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .attach-btn:hover { border-color: var(--black); color: var(--black); }
-        .attach-btn svg { width: 20px; height: 20px; }
-
-        .text-field {
-            flex: 1;
-            padding: 14px 18px;
-            background: var(--white);
-            border: 2px solid var(--gray-200);
-            font-family: inherit;
-            font-size: 15px;
-            color: var(--black);
-            outline: none;
-            transition: border-color 0.15s;
-        }
-
-        .text-field:focus { border-color: var(--black); }
-        .text-field::placeholder { color: var(--gray-400); }
-
-        .send-btn {
-            width: 48px;
-            height: 48px;
-            background: var(--black);
-            border: none;
-            color: var(--white);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .send-btn:hover { background: var(--gray-800); }
-        .send-btn svg { width: 20px; height: 20px; }
-
-        /* Toast */
-        .toast {
-            position: fixed;
-            bottom: 100px;
-            left: 50%;
-            transform: translateX(-50%) translateY(16px);
-            background: var(--black);
-            color: var(--white);
-            padding: 14px 24px;
-            font-size: 14px;
-            font-weight: 500;
-            opacity: 0;
-            transition: all 0.2s ease;
-            z-index: 100;
-            pointer-events: none;
-        }
-
-        .toast.show {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
-        }
-
-        /* Modal */
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.6);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 200;
-            padding: 24px;
-        }
-
-        .modal-overlay.active { display: flex; }
-
-        .modal {
-            background: var(--white);
-            padding: 32px;
-            max-width: 420px;
-            width: 100%;
-        }
-
-        .modal h3 {
-            font-family: 'Fraunces', Georgia, serif;
-            font-size: 22px;
-            font-weight: 500;
-            margin-bottom: 12px;
-        }
-
-        .modal p {
-            font-size: 14px;
-            color: var(--gray-600);
-            margin-bottom: 24px;
-            line-height: 1.6;
-        }
-
-        .fp-box {
-            background: var(--black);
-            padding: 24px;
-            font-family: 'IBM Plex Mono', monospace;
-            font-size: 16px;
-            text-align: center;
-            letter-spacing: 2px;
-            color: var(--white);
-            margin-bottom: 16px;
-        }
-
-        .modal-hint {
+        
+        .footer-links a {
             font-size: 12px;
-            color: var(--gray-400);
-            margin-bottom: 24px;
-            text-align: center;
+            color: var(--gray-4);
+            transition: color 0.15s;
         }
-
-        /* Spinner */
-        .spinner {
-            width: 24px;
-            height: 24px;
-            border: 2px solid var(--gray-800);
-            border-top-color: var(--gray-400);
-            border-radius: 50%;
-            animation: spin 0.7s linear infinite;
+        
+        .footer-links a:hover {
+            color: var(--white);
         }
-
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        /* Utilities */
-        .hidden { display: none !important; }
-
-        /* Focus states for accessibility */
-        .btn:focus-visible,
-        .attach-btn:focus-visible,
-        .send-btn:focus-visible,
-        .chat-verify:focus-visible,
-        textarea.field:focus-visible,
-        .text-field:focus-visible {
-            outline: 2px solid var(--black);
-            outline-offset: 2px;
-        }
-
-        /* Reduced motion */
-        @media (prefers-reduced-motion: reduce) {
-            *, *::before, *::after {
-                animation-duration: 0.01ms !important;
-                transition-duration: 0.01ms !important;
+        
+        @media (max-width: 799px) {
+            header {
+                padding: 20px 24px;
+            }
+            .intro {
+                padding: 140px 24px 100px;
+            }
+            .tool-name, .tool-desc, .tool-action {
+                padding-left: 24px;
+                padding-right: 24px;
+            }
+            .protocol, .principles, footer {
+                padding-left: 24px;
+                padding-right: 24px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="page" id="page">
-        <nav>
-            <div class="nav-inner">
-                <a href="#" class="logo" onclick="goHome(); return false;">
-                    <div class="logo-mark">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-                        </svg>
-                    </div>
-                    <span class="logo-text">Whisper</span>
-                </a>
-                <div class="nav-status" id="navStatus">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                    </svg>
-                    <span>Chiffré</span>
+    <header>
+        <a href="/" class="wordmark">VoidLab</a>
+        <span class="status">Opérationnel</span>
+    </header>
+    
+    <main>
+        <section class="intro">
+            <h1>Outils chiffrés pour un internet <em>libre</em></h1>
+            <p class="intro-text">Suite d'applications gratuites avec chiffrement de bout en bout. Aucun serveur ne stocke vos données. Aucun compte requis. Aucune trace conservée.</p>
+            <nav class="intro-links">
+                <a href="/manifeste">Lire le manifeste</a>
+                <a href="https://github.com/voidlab" target="_blank" rel="noopener noreferrer">Code source</a>
+            </nav>
+        </section>
+        
+        <section class="tools">
+            <a href="/transfer" class="tool">
+                <span class="tool-name">Transfer</span>
+                <span class="tool-desc">Envoi de fichiers P2P sans limite de taille. Connexion directe entre appareils, chiffrement AES-256-GCM.</span>
+                <span class="tool-action live">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    Disponible
+                </span>
+            </a>
+            
+            <a href="/whisper" class="tool">
+                <span class="tool-name">Whisper</span>
+                <span class="tool-desc">Messagerie chiffrée pair-à-pair. Échange de messages et fichiers en temps réel.</span>
+                <span class="tool-action live">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    Disponible
+                </span>
+            </a>
+            
+            <div class="tool">
+                <span class="tool-name">Vault</span>
+                <span class="tool-desc">Gestionnaire de mots de passe local. Chiffrement AES-256, export sécurisé.</span>
+                <span class="tool-action soon">Bientôt</span>
+            </div>
+            
+            <div class="tool">
+                <span class="tool-name">Notes</span>
+                <span class="tool-desc">Notes chiffrées Markdown. Stockage local, synchronisation P2P optionnelle.</span>
+                <span class="tool-action soon">Bientôt</span>
+            </div>
+            
+            <div class="tool">
+                <span class="tool-name">Paste</span>
+                <span class="tool-desc">Partage de texte chiffré. Autodestruction après lecture unique.</span>
+                <span class="tool-action soon">Bientôt</span>
+            </div>
+            
+            <div class="tool">
+                <span class="tool-name">Auth</span>
+                <span class="tool-desc">Authentification 2FA locale. TOTP sans cloud, backup chiffré.</span>
+                <span class="tool-action soon">Bientôt</span>
+            </div>
+        </section>
+        
+        <section class="protocol">
+            <h2 class="section-title">Protocole cryptographique</h2>
+            <p class="section-desc">Standards ouverts, implémentation native via Web Crypto API. Aucune dépendance externe. Code source auditable.</p>
+            
+            <div class="specs">
+                <div class="spec">
+                    <div class="spec-label">Échange de clés</div>
+                    <div class="spec-value">ECDH P-256</div>
+                    <div class="spec-note">Courbe elliptique NIST. Clés éphémères par session. Perfect Forward Secrecy garanti.</div>
+                </div>
+                <div class="spec">
+                    <div class="spec-label">Dérivation</div>
+                    <div class="spec-value">HKDF-SHA-256</div>
+                    <div class="spec-note">RFC 5869. Salt aléatoire 256 bits généré par session.</div>
+                </div>
+                <div class="spec">
+                    <div class="spec-label">Chiffrement</div>
+                    <div class="spec-value">AES-256-GCM</div>
+                    <div class="spec-note">Chiffrement authentifié. IV 96 bits par message. Tag intégrité 128 bits.</div>
+                </div>
+                <div class="spec">
+                    <div class="spec-label">Transport</div>
+                    <div class="spec-value">DTLS 1.2+</div>
+                    <div class="spec-note">WebRTC DataChannel avec DTLS-SRTP. Double couche de chiffrement.</div>
                 </div>
             </div>
+        </section>
+        
+        <section class="principles">
+            <h2 class="section-title">Principes fondateurs</h2>
+            
+            <div class="principles-grid">
+                <article class="principle">
+                    <h3>Zéro confiance</h3>
+                    <p>Nous ne demandons pas votre confiance. Le chiffrement s'effectue sur votre appareil. Même compromis, nos serveurs ne révéleraient rien.</p>
+                </article>
+                
+                <article class="principle">
+                    <h3>Zéro connaissance</h3>
+                    <p>Nous ne savons rien de vous. Pas de compte, pas d'email, pas de numéro. Identification impossible, pour nous comme pour quiconque.</p>
+                </article>
+                
+                <article class="principle">
+                    <h3>Zéro trace</h3>
+                    <p>Fermez l'onglet, tout disparaît. Aucun historique, aucun log, aucune métadonnée. Les clés sont détruites à chaque session.</p>
+                </article>
+            </div>
+        </section>
+    </main>
+    
+    <footer>
+        <div class="footer-left">VoidLab — France — 2025</div>
+        <nav class="footer-links">
+            <a href="/manifeste">Manifeste</a>
+            <a href="https://github.com/voidlab" target="_blank" rel="noopener noreferrer">GitHub</a>
         </nav>
-
-        <!-- LANDING PAGE -->
-        <main class="landing" id="landing">
-            <section class="hero">
-                <div class="hero-inner">
-                    <h1>Messages chiffrés.<br>Aucun intermédiaire.</h1>
-                    <p class="hero-sub">Whisper établit une connexion directe entre vous et votre contact. Vos messages sont chiffrés sur votre appareil. Personne d'autre ne peut les lire.</p>
-                    <div class="hero-actions">
-                        <button class="btn btn-black" onclick="startNew()">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-                            </svg>
-                            Créer
-                        </button>
-                        <button class="btn btn-outline" onclick="startJoin()">Rejoindre</button>
-                    </div>
-                </div>
-            </section>
-
-            <div class="security-banner">
-                <div class="security-inner">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polyline points="20 6 9 17 4 12"/>
-                    </svg>
-                    <span>Code source vérifiable : <a href="javascript:void(0)" onclick="alert('Clic droit > Afficher le code source')">inspecter cette page</a></span>
-                </div>
-            </div>
-
-            <section class="content">
-                <div class="grid-section">
-                    <div class="grid-item">
-                        <h3>Pair à pair</h3>
-                        <p>Votre navigateur se connecte directement à celui de votre contact via WebRTC. Aucun serveur ne relaie vos messages, ils transitent uniquement entre vos deux appareils.</p>
-                    </div>
-                    <div class="grid-item">
-                        <h3>Chiffrement local</h3>
-                        <p>Chaque message est chiffré sur votre appareil avant transmission. La clé de chiffrement est négociée entre les deux navigateurs et ne quitte jamais votre machine.</p>
-                    </div>
-                    <div class="grid-item">
-                        <h3>Éphémère</h3>
-                        <p>Fermez l'onglet, tout disparaît. Aucun historique n'est conservé, ni sur un serveur, ni sur votre appareil. Les clés sont générées pour chaque session.</p>
-                    </div>
-                    <div class="grid-item">
-                        <h3>Vérifiable</h3>
-                        <p>Comparez l'empreinte cryptographique avec votre contact par téléphone ou en personne. Si elle correspond, personne n'intercepte vos échanges.</p>
-                    </div>
-                </div>
-            </section>
-
-            <section class="protocol-section">
-                <div class="protocol-inner">
-                    <div class="protocol-header">
-                        <h2>Protocole cryptographique</h2>
-                        <p>Standards ouverts, implémentation native du navigateur via Web Crypto API. Aucune dépendance externe.</p>
-                    </div>
-                    <div class="protocol-grid">
-                        <div class="protocol-card">
-                            <div class="protocol-label">Échange de clés</div>
-                            <div class="protocol-value">ECDH P-256</div>
-                            <div class="protocol-desc">Courbe elliptique NIST. Chaque partie génère une paire de clés éphémères. Le secret partagé est calculé sans jamais transmettre de clé privée.</div>
-                        </div>
-                        <div class="protocol-card">
-                            <div class="protocol-label">Dérivation</div>
-                            <div class="protocol-value">HKDF-SHA-256</div>
-                            <div class="protocol-desc">Fonction de dérivation standardisée (RFC 5869). Salt aléatoire de 256 bits par session. Produit une clé AES de 256 bits.</div>
-                        </div>
-                        <div class="protocol-card">
-                            <div class="protocol-label">Chiffrement</div>
-                            <div class="protocol-value">AES-256-GCM</div>
-                            <div class="protocol-desc">Chiffrement authentifié. IV aléatoire de 96 bits par message. Tag d'authentification de 128 bits garantit l'intégrité.</div>
-                        </div>
-                        <div class="protocol-card">
-                            <div class="protocol-label">Transport</div>
-                            <div class="protocol-value">DTLS 1.2+</div>
-                            <div class="protocol-desc">WebRTC DataChannel avec DTLS-SRTP obligatoire. Double couche de chiffrement : transport + applicatif.</div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <section class="verify-section">
-                <div class="verify-inner">
-                    <div class="verify-header">
-                        <h2>Pourquoi c'est sécurisé</h2>
-                        <p>La sécurité ne repose pas sur la confiance, mais sur la cryptographie vérifiable.</p>
-                    </div>
-                    <div class="verify-steps">
-                        <div class="verify-step">
-                            <div class="verify-num">1</div>
-                            <h4>Perfect Forward Secrecy</h4>
-                            <p>Clés éphémères à chaque session. Même si une clé future était compromise, vos messages passés restent protégés.</p>
-                        </div>
-                        <div class="verify-step">
-                            <div class="verify-num">2</div>
-                            <h4>Chiffrement authentifié</h4>
-                            <p>AES-GCM détecte toute modification des données. Un message altéré en transit est rejeté automatiquement.</p>
-                        </div>
-                        <div class="verify-step">
-                            <div class="verify-num">3</div>
-                            <h4>Vérification hors bande</h4>
-                            <p>L'empreinte SHA-256 du secret partagé peut être comparée par téléphone pour détecter une interception.</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <section class="compare-section">
-                <div class="compare-inner">
-                    <table class="compare-table">
-                        <thead>
-                            <tr>
-                                <th></th>
-                                <th>E2E</th>
-                                <th>P2P</th>
-                                <th>Anonyme</th>
-                                <th>Serveur</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Whisper</td>
-                                <td class="yes">Oui</td>
-                                <td class="yes">Oui</td>
-                                <td class="yes">Oui</td>
-                                <td class="yes">Aucun</td>
-                            </tr>
-                            <tr>
-                                <td>Olvid <sup>1</sup></td>
-                                <td class="yes">Oui</td>
-                                <td class="no">Non</td>
-                                <td class="partial">Partiel <sup>2</sup></td>
-                                <td class="partial">AWS <sup>3</sup></td>
-                            </tr>
-                            <tr>
-                                <td>Signal</td>
-                                <td class="yes">Oui</td>
-                                <td class="no">Non</td>
-                                <td class="no">Non</td>
-                                <td class="no">USA</td>
-                            </tr>
-                            <tr>
-                                <td>WhatsApp</td>
-                                <td class="yes">Oui</td>
-                                <td class="no">Non</td>
-                                <td class="no">Non</td>
-                                <td class="no">Meta</td>
-                            </tr>
-                            <tr>
-                                <td>Telegram <sup>4</sup></td>
-                                <td class="partial">Partiel</td>
-                                <td class="no">Non</td>
-                                <td class="no">Non</td>
-                                <td class="no">Dubaï</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <div class="compare-footnotes">
-                        <p><sup>1</sup> Certifiée ANSSI, crypto solide (AES-256, Curve25519), métadonnées chiffrées, client open source.</p>
-                        <p><sup>2</sup> Pas de numéro requis, mais un compte est nécessaire.</p>
-                        <p><sup>3</sup> Serveur relais hébergé sur AWS, soumis au Cloud Act malgré l'éditeur français.</p>
-                        <p><sup>4</sup> E2E uniquement dans les "chats secrets", désactivé par défaut.</p>
-                    </div>
-                </div>
-            </section>
-
-            <section class="note-section">
-                <div class="note-inner">
-                    <strong>Transparence sur les limites.</strong> En connexion directe (P2P), votre contact voit votre adresse IP. C'est inhérent au protocole WebRTC. Pour masquer votre IP, utilisez <a href="https://www.torproject.org/download/" target="_blank" rel="noopener noreferrer">Tor Browser</a>. Ce projet est expérimental et ne remplace pas un audit de sécurité professionnel pour des communications critiques.
-                </div>
-            </section>
-
-            <footer>
-                <p>Whisper est un projet open source. <a href="javascript:void(0)" onclick="alert('Clic droit > Afficher le code source')">Voir le code</a></p>
-            </footer>
-        </main>
-
-        <!-- CREATE SCREEN -->
-        <div class="setup-screen" id="createScreen">
-            <div class="setup-inner">
-                <a class="setup-back" onclick="goHome()">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
-                    </svg>
-                    Retour
-                </a>
-                <div class="setup-header">
-                    <h2>Créer une conversation</h2>
-                    <p>Envoyez ce code à votre contact par un canal sécurisé.</p>
-                </div>
-                <div class="setup-step">
-                    <div class="step-label">
-                        <div class="step-num">1</div>
-                        <span class="step-title">Votre code d'invitation</span>
-                    </div>
-                    <div class="code-display loading" id="offerBox"><div class="spinner"></div></div>
-                    <div class="btn-row">
-                        <button class="btn btn-outline" onclick="copyOffer()">Copier</button>
-                    </div>
-                </div>
-                <div class="setup-step">
-                    <div class="step-label">
-                        <div class="step-num">2</div>
-                        <span class="step-title">Réponse de votre contact</span>
-                    </div>
-                    <textarea class="field" id="answerField" placeholder="Collez la réponse ici"></textarea>
-                    <div class="btn-row">
-                        <button class="btn btn-black" onclick="handleAnswer()">Connecter</button>
-                    </div>
-                </div>
-                <div class="alert-box">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
-                    </svg>
-                    <span>Ce code contient votre clé publique éphémère. Partagez-le uniquement avec votre contact via un canal de confiance (appel, SMS, en personne).</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- JOIN SCREEN -->
-        <div class="setup-screen" id="joinScreen">
-            <div class="setup-inner">
-                <a class="setup-back" onclick="goHome()">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
-                    </svg>
-                    Retour
-                </a>
-                <div class="setup-header">
-                    <h2>Rejoindre une conversation</h2>
-                    <p>Collez le code d'invitation reçu de votre contact.</p>
-                </div>
-                <div class="setup-step">
-                    <div class="step-label">
-                        <div class="step-num">1</div>
-                        <span class="step-title">Code d'invitation</span>
-                    </div>
-                    <textarea class="field" id="offerField" placeholder="Collez le code d'invitation"></textarea>
-                    <div class="btn-row">
-                        <button class="btn btn-black" onclick="handleOffer()">Valider</button>
-                    </div>
-                </div>
-                <div class="setup-step hidden" id="answerSection">
-                    <div class="step-label">
-                        <div class="step-num">2</div>
-                        <span class="step-title">Votre réponse</span>
-                    </div>
-                    <div class="code-display" id="answerBox"></div>
-                    <div class="btn-row">
-                        <button class="btn btn-outline" onclick="copyAnswer()">Copier</button>
-                    </div>
-                    <p style="margin-top:16px;font-size:14px;color:var(--gray-600);">Envoyez cette réponse à votre contact. La connexion s'établira automatiquement.</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- CHAT SCREEN -->
-        <div class="chat-screen" id="chatScreen">
-            <div class="chat-container">
-                <div class="chat-info">
-                    <div class="chat-info-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/>
-                        </svg>
-                    </div>
-                    <div class="chat-info-text">
-                        <div class="chat-info-title">Connexion chiffrée établie</div>
-                        <div class="chat-info-sub">AES-256-GCM • Clés éphémères • P2P direct</div>
-                    </div>
-                    <button class="chat-verify" onclick="showFingerprint()">Vérifier</button>
-                </div>
-                <div class="chat-messages" id="messageList"></div>
-            </div>
-            <div class="chat-input">
-                <div class="chat-input-inner">
-                    <div class="upload-bar" id="uploadBar">
-                        <div class="upload-info">
-                            <span id="uploadName"></span>
-                            <span id="uploadPct">0%</span>
-                        </div>
-                        <div class="upload-progress">
-                            <div class="upload-fill" id="uploadFill"></div>
-                        </div>
-                    </div>
-                    <div class="input-row">
-                        <button class="attach-btn" onclick="document.getElementById('fileInput').click()" aria-label="Joindre un fichier">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
-                            </svg>
-                        </button>
-                        <input type="file" id="fileInput" style="display:none" onchange="onFileSelect(event)" multiple>
-                        <input type="text" class="text-field" id="msgInput" placeholder="Votre message" onkeydown="onKeyPress(event)" aria-label="Votre message">
-                        <button class="send-btn" onclick="sendText()" aria-label="Envoyer">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="toast" id="toast"></div>
-
-    <div class="modal-overlay" id="fpModal">
-        <div class="modal">
-            <h3>Vérification de sécurité</h3>
-            <p>Comparez ce code avec votre contact par téléphone ou en personne. S'il correspond des deux côtés, votre communication est sécurisée.</p>
-            <div class="fp-box" id="fpCode"></div>
-            <p class="modal-hint">Empreinte SHA-256 du secret partagé ECDH</p>
-            <button class="btn btn-outline" onclick="closeFingerprint()" style="width:100%;padding:12px">Fermer</button>
-        </div>
-    </div>
-
-    <script>
-    // ============================================
-    // CRYPTOGRAPHY MODULE
-    // Uses Web Crypto API - no external dependencies
-    // ============================================
-    const Crypto = {
-        // Generate ECDH key pair for Diffie-Hellman exchange
-        async generateKeyPair() {
-            return crypto.subtle.generateKey(
-                { name: 'ECDH', namedCurve: 'P-256' },
-                true,
-                ['deriveBits']
-            );
-        },
-
-        // Export public key to base64
-        async exportPublic(keyPair) {
-            const raw = await crypto.subtle.exportKey('raw', keyPair.publicKey);
-            return this.bufToB64(raw);
-        },
-
-        // Import peer's public key
-        async importPublic(b64) {
-            return crypto.subtle.importKey(
-                'raw',
-                this.b64ToBuf(b64),
-                { name: 'ECDH', namedCurve: 'P-256' },
-                true,
-                []
-            );
-        },
-
-        // Derive shared secret using ECDH
-        async deriveSharedSecret(privateKey, peerPublicKey) {
-            const bits = await crypto.subtle.deriveBits(
-                { name: 'ECDH', public: peerPublicKey },
-                privateKey,
-                256
-            );
-            return new Uint8Array(bits);
-        },
-
-        // HKDF key derivation (RFC 5869)
-        async deriveKey(sharedSecret, salt) {
-            const keyMaterial = await crypto.subtle.importKey(
-                'raw', sharedSecret, 'HKDF', false, ['deriveKey']
-            );
-            return crypto.subtle.deriveKey(
-                {
-                    name: 'HKDF',
-                    hash: 'SHA-256',
-                    salt: salt,
-                    info: new TextEncoder().encode('whisper-v4-aes256gcm')
-                },
-                keyMaterial,
-                { name: 'AES-GCM', length: 256 },
-                true,
-                ['encrypt', 'decrypt']
-            );
-        },
-
-        // Generate cryptographic salt
-        generateSalt() {
-            return crypto.getRandomValues(new Uint8Array(32));
-        },
-
-        // AES-256-GCM encryption with random IV
-        async encrypt(key, plaintext) {
-            const iv = crypto.getRandomValues(new Uint8Array(12));
-            const data = new TextEncoder().encode(plaintext);
-            const ct = await crypto.subtle.encrypt(
-                { name: 'AES-GCM', iv, tagLength: 128 },
-                key,
-                data
-            );
-            // Prepend IV to ciphertext
-            const result = new Uint8Array(12 + ct.byteLength);
-            result.set(iv);
-            result.set(new Uint8Array(ct), 12);
-            return this.bufToB64(result.buffer);
-        },
-
-        // AES-256-GCM decryption
-        async decrypt(key, ciphertext) {
-            const data = new Uint8Array(this.b64ToBuf(ciphertext));
-            const iv = data.slice(0, 12);
-            const ct = data.slice(12);
-            const pt = await crypto.subtle.decrypt(
-                { name: 'AES-GCM', iv, tagLength: 128 },
-                key,
-                ct
-            );
-            return new TextDecoder().decode(pt);
-        },
-
-        // Generate fingerprint from shared secret
-        async fingerprint(secret) {
-            const hash = new Uint8Array(await crypto.subtle.digest('SHA-256', secret));
-            let fp = '';
-            for (let i = 0; i < 16; i++) {
-                fp += hash[i].toString(16).padStart(2, '0');
-                if (i % 4 === 3 && i < 15) fp += ' ';
-            }
-            return fp.toUpperCase();
-        },
-
-        // Base64 utilities
-        bufToB64(buf) {
-            let s = '';
-            new Uint8Array(buf).forEach(b => s += String.fromCharCode(b));
-            return btoa(s);
-        },
-
-        b64ToBuf(s) {
-            const bin = atob(s);
-            const arr = new Uint8Array(bin.length);
-            for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
-            return arr.buffer;
-        }
-    };
-
-    // ============================================
-    // SECURE P2P CONNECTION
-    // WebRTC DataChannel with DTLS + application-level AES
-    // ============================================
-    class SecureConnection {
-        constructor() {
-            this.pc = null;
-            this.dc = null;
-            this.keyPair = null;
-            this.sharedSecret = null;
-            this.encKey = null;
-            this.salt = null;
-            this.onMessage = null;
-            this.onOpen = null;
-            this.onClose = null;
-        }
-
-        async createOffer() {
-            this.keyPair = await Crypto.generateKeyPair();
-            this.salt = Crypto.generateSalt();
-            const pubB64 = await Crypto.exportPublic(this.keyPair);
-            const saltB64 = Crypto.bufToB64(this.salt.buffer);
-
-            this.pc = new RTCPeerConnection({
-                iceServers: [
-                    { urls: 'stun:stun.l.google.com:19302' },
-                    { urls: 'stun:stun.cloudflare.com:3478' }
-                ]
-            });
-
-            this.dc = this.pc.createDataChannel('secure', { ordered: true });
-            this._bindChannel();
-
-            const offer = await this.pc.createOffer();
-            await this.pc.setLocalDescription(offer);
-            await this._gatherICE();
-
-            return btoa(JSON.stringify({
-                sdp: this.pc.localDescription.sdp,
-                pub: pubB64,
-                salt: saltB64
-            }));
-        }
-
-        async acceptOffer(offerB64) {
-            const { sdp, pub: peerPubB64, salt: saltB64 } = JSON.parse(atob(offerB64));
-            
-            this.keyPair = await Crypto.generateKeyPair();
-            this.salt = new Uint8Array(Crypto.b64ToBuf(saltB64));
-
-            const peerPub = await Crypto.importPublic(peerPubB64);
-            this.sharedSecret = await Crypto.deriveSharedSecret(this.keyPair.privateKey, peerPub);
-            this.encKey = await Crypto.deriveKey(this.sharedSecret, this.salt);
-
-            const myPubB64 = await Crypto.exportPublic(this.keyPair);
-
-            this.pc = new RTCPeerConnection({
-                iceServers: [
-                    { urls: 'stun:stun.l.google.com:19302' },
-                    { urls: 'stun:stun.cloudflare.com:3478' }
-                ]
-            });
-
-            this.pc.ondatachannel = e => {
-                this.dc = e.channel;
-                this._bindChannel();
-            };
-
-            await this.pc.setRemoteDescription({ type: 'offer', sdp });
-            const answer = await this.pc.createAnswer();
-            await this.pc.setLocalDescription(answer);
-            await this._gatherICE();
-
-            return btoa(JSON.stringify({
-                sdp: this.pc.localDescription.sdp,
-                pub: myPubB64
-            }));
-        }
-
-        async completeHandshake(answerB64) {
-            const { sdp, pub: peerPubB64 } = JSON.parse(atob(answerB64));
-            
-            const peerPub = await Crypto.importPublic(peerPubB64);
-            this.sharedSecret = await Crypto.deriveSharedSecret(this.keyPair.privateKey, peerPub);
-            this.encKey = await Crypto.deriveKey(this.sharedSecret, this.salt);
-
-            await this.pc.setRemoteDescription({ type: 'answer', sdp });
-        }
-
-        async send(msg) {
-            if (!this.dc || this.dc.readyState !== 'open') throw new Error('Not connected');
-            const encrypted = await Crypto.encrypt(this.encKey, msg);
-            this.dc.send(encrypted);
-        }
-
-        async getFingerprint() {
-            if (!this.sharedSecret) return null;
-            return Crypto.fingerprint(this.sharedSecret);
-        }
-
-        _bindChannel() {
-            this.dc.onopen = () => this.onOpen?.();
-            this.dc.onclose = () => this.onClose?.();
-            this.dc.onmessage = async e => {
-                try {
-                    const msg = await Crypto.decrypt(this.encKey, e.data);
-                    this.onMessage?.(msg);
-                } catch (err) {
-                    console.error('Decryption failed:', err);
-                }
-            };
-        }
-
-        _gatherICE() {
-            return new Promise(resolve => {
-                if (this.pc.iceGatheringState === 'complete') return resolve();
-                const check = () => {
-                    if (this.pc.iceGatheringState === 'complete') {
-                        this.pc.removeEventListener('icegatheringstatechange', check);
-                        resolve();
-                    }
-                };
-                this.pc.addEventListener('icegatheringstatechange', check);
-                setTimeout(resolve, 5000);
-            });
-        }
-
-        close() {
-            this.dc?.close();
-            this.pc?.close();
-        }
-    }
-
-    // ============================================
-    // APPLICATION STATE
-    // ============================================
-    let conn = null;
-    let offerCode = '';
-    let answerCode = '';
-    const incoming = {};
-
-    // ============================================
-    // DOM UTILITIES
-    // ============================================
-    const $ = id => document.getElementById(id);
-
-    function showScreen(screen) {
-        $('landing').classList.add('hidden');
-        $('createScreen').classList.remove('active');
-        $('joinScreen').classList.remove('active');
-        $('chatScreen').classList.remove('active');
-        $('page').classList.remove('chat-active');
-
-        if (screen === 'landing') {
-            $('landing').classList.remove('hidden');
-        } else if (screen === 'create') {
-            $('createScreen').classList.add('active');
-        } else if (screen === 'join') {
-            $('joinScreen').classList.add('active');
-        } else if (screen === 'chat') {
-            $('chatScreen').classList.add('active');
-            $('page').classList.add('chat-active');
-        }
-    }
-
-    function toast(msg) {
-        const t = $('toast');
-        t.textContent = msg;
-        t.classList.add('show');
-        setTimeout(() => t.classList.remove('show'), 2000);
-    }
-
-    function setStatus(text, pending = false) {
-        const s = $('navStatus');
-        s.querySelector('span').textContent = text;
-        s.classList.toggle('pending', pending);
-    }
-
-    function goHome() {
-        conn?.close();
-        conn = null;
-        showScreen('landing');
-        setStatus('Connecté');
-    }
-
-    // ============================================
-    // CHAT FLOW
-    // ============================================
-    async function startNew() {
-        conn = new SecureConnection();
-        
-        conn.onOpen = () => {
-            showScreen('chat');
-            setStatus('Connecté');
-            $('messageList').innerHTML = '';
-            $('msgInput').focus();
-        };
-        
-        conn.onClose = () => {
-            setStatus('Déconnecté', true);
-            addSystemMsg('Connexion terminée');
-        };
-        
-        conn.onMessage = msg => {
-            if (!handleFileMsg(msg)) addMsg(msg, false);
-        };
-
-        showScreen('create');
-        setStatus('En attente...', true);
-
-        const box = $('offerBox');
-        box.innerHTML = '<div class="spinner"></div>';
-        box.classList.add('loading');
-        $('answerField').value = '';
-
-        try {
-            offerCode = await conn.createOffer();
-            box.textContent = offerCode;
-            box.classList.remove('loading');
-        } catch (e) {
-            box.textContent = 'Erreur de génération';
-            console.error(e);
-        }
-    }
-
-    function copyOffer() {
-        navigator.clipboard.writeText(offerCode);
-        toast('Code copié');
-    }
-
-    async function handleAnswer() {
-        const val = $('answerField').value.trim();
-        if (!val) return toast('Collez la réponse');
-        try {
-            await conn.completeHandshake(val);
-        } catch (e) {
-            toast('Code invalide');
-            console.error(e);
-        }
-    }
-
-    async function startJoin() {
-        conn = new SecureConnection();
-        
-        conn.onOpen = () => {
-            showScreen('chat');
-            setStatus('Connecté');
-            $('messageList').innerHTML = '';
-            $('msgInput').focus();
-        };
-        
-        conn.onClose = () => {
-            setStatus('Déconnecté', true);
-            addSystemMsg('Connexion terminée');
-        };
-        
-        conn.onMessage = msg => {
-            if (!handleFileMsg(msg)) addMsg(msg, false);
-        };
-
-        showScreen('join');
-        setStatus('En attente...', true);
-        $('answerSection').classList.add('hidden');
-        $('offerField').value = '';
-    }
-
-    async function handleOffer() {
-        const val = $('offerField').value.trim();
-        if (!val) return toast('Collez le code');
-        try {
-            answerCode = await conn.acceptOffer(val);
-            $('answerBox').textContent = answerCode;
-            $('answerSection').classList.remove('hidden');
-        } catch (e) {
-            toast('Code invalide');
-            console.error(e);
-        }
-    }
-
-    function copyAnswer() {
-        navigator.clipboard.writeText(answerCode);
-        toast('Réponse copiée');
-    }
-
-    // ============================================
-    // MESSAGES
-    // ============================================
-    function esc(s) {
-        const d = document.createElement('div');
-        d.textContent = s;
-        return d.innerHTML;
-    }
-
-    function time() {
-        return new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-    }
-
-    function addMsg(text, sent) {
-        const list = $('messageList');
-        const div = document.createElement('div');
-        div.className = 'msg' + (sent ? ' sent' : '');
-        div.innerHTML = `<div class="msg-bubble">${esc(text)}</div><div class="msg-time">${time()}</div>`;
-        list.appendChild(div);
-        list.scrollTop = list.scrollHeight;
-    }
-
-    function addSystemMsg(text) {
-        const list = $('messageList');
-        const div = document.createElement('div');
-        div.className = 'msg-system';
-        div.textContent = text;
-        list.appendChild(div);
-    }
-
-    async function sendText() {
-        const input = $('msgInput');
-        const text = input.value.trim();
-        if (!text || !conn) return;
-        try {
-            await conn.send(text);
-            addMsg(text, true);
-            input.value = '';
-        } catch (e) {
-            toast('Erreur d\'envoi');
-        }
-    }
-
-    function onKeyPress(e) {
-        if (e.key === 'Enter') sendText();
-    }
-
-    // ============================================
-    // FINGERPRINT VERIFICATION
-    // ============================================
-    async function showFingerprint() {
-        if (!conn) return;
-        const fp = await conn.getFingerprint();
-        if (fp) {
-            $('fpCode').textContent = fp;
-            $('fpModal').classList.add('active');
-        }
-    }
-
-    function closeFingerprint() {
-        $('fpModal').classList.remove('active');
-    }
-
-    // ============================================
-    // FILE TRANSFER
-    // ============================================
-    const CHUNK = 64 * 1024;
-    const MAX_BUF = 256 * 1024;
-
-    async function onFileSelect(e) {
-        const files = e.target.files;
-        if (!files.length || !conn) return;
-        for (const f of files) await sendFile(f);
-        e.target.value = '';
-    }
-
-    async function sendFile(file) {
-        const id = crypto.randomUUID();
-        const total = Math.ceil(file.size / CHUNK);
-        showUpload(file.name, 0);
-
-        await conn.send(JSON.stringify({
-            t: 'start', id, name: file.name, size: file.size, mime: file.type, total
-        }));
-
-        const buf = new Uint8Array(await file.arrayBuffer());
-        for (let i = 0; i < total; i++) {
-            await waitBuf(conn.dc);
-            const chunk = buf.slice(i * CHUNK, Math.min((i + 1) * CHUNK, file.size));
-            await conn.send(JSON.stringify({
-                t: 'chunk', id, i, d: Crypto.bufToB64(chunk.buffer)
-            }));
-            showUpload(file.name, Math.round((i + 1) / total * 100));
-        }
-
-        await conn.send(JSON.stringify({ t: 'end', id }));
-        hideUpload();
-        addFile(file.name, file.size, file.type, null, true);
-    }
-
-    function waitBuf(dc) {
-        return new Promise(r => {
-            if (!dc || dc.bufferedAmount <= MAX_BUF) return r();
-            const c = () => {
-                if (!dc || dc.readyState !== 'open' || dc.bufferedAmount <= MAX_BUF) r();
-                else setTimeout(c, 50);
-            };
-            c();
-        });
-    }
-
-    function handleFileMsg(data) {
-        try {
-            const m = JSON.parse(data);
-            if (m.t === 'start') {
-                incoming[m.id] = { name: m.name, size: m.size, mime: m.mime, total: m.total, parts: [], got: 0 };
-                showUpload(m.name, 0);
-                return true;
-            }
-            if (m.t === 'chunk') {
-                const f = incoming[m.id];
-                if (!f) return true;
-                f.parts[m.i] = Crypto.b64ToBuf(m.d);
-                f.got++;
-                showUpload(f.name, Math.round(f.got / f.total * 100));
-                return true;
-            }
-            if (m.t === 'end') {
-                const f = incoming[m.id];
-                if (!f) return true;
-                const len = f.parts.reduce((a, p) => a + p.byteLength, 0);
-                const arr = new Uint8Array(len);
-                let off = 0;
-                for (const p of f.parts) { arr.set(new Uint8Array(p), off); off += p.byteLength; }
-                const url = URL.createObjectURL(new Blob([arr], { type: f.mime }));
-                hideUpload();
-                addFile(f.name, f.size, f.mime, url, false);
-                delete incoming[m.id];
-                return true;
-            }
-            return false;
-        } catch { return false; }
-    }
-
-    function showUpload(name, pct) {
-        $('uploadBar').classList.add('active');
-        $('uploadName').textContent = name.length > 24 ? name.slice(0, 21) + '...' : name;
-        $('uploadPct').textContent = pct + '%';
-        $('uploadFill').style.width = pct + '%';
-    }
-
-    function hideUpload() {
-        $('uploadBar').classList.remove('active');
-    }
-
-    function formatSize(b) {
-        if (b < 1024) return b + ' o';
-        if (b < 1048576) return (b / 1024).toFixed(1) + ' Ko';
-        return (b / 1048576).toFixed(1) + ' Mo';
-    }
-
-    function addFile(name, size, mime, url, sent) {
-        const list = $('messageList');
-        const ext = name.split('.').pop() || '?';
-        const sz = formatSize(size);
-        const isImg = mime?.startsWith('image/');
-
-        const div = document.createElement('div');
-        div.className = 'msg' + (sent ? ' sent' : '');
-
-        if (isImg && url) {
-            div.innerHTML = `
-                <div class="msg-img">
-                    <img src="${url}" alt="${esc(name)}">
-                    <div class="file-dl"><a href="${url}" download="${esc(name)}">Télécharger (${sz})</a></div>
-                </div>
-                <div class="msg-time">${time()}</div>
-            `;
-        } else {
-            div.innerHTML = `
-                <div class="msg-file">
-                    <div class="file-icon">${esc(ext)}</div>
-                    <div class="file-info">
-                        <div class="file-name">${esc(name)}</div>
-                        <div class="file-size">${sz}</div>
-                        ${url ? `<div class="file-dl"><a href="${url}" download="${esc(name)}">Télécharger</a></div>` : ''}
-                    </div>
-                </div>
-                <div class="msg-time">${time()}</div>
-            `;
-        }
-
-        list.appendChild(div);
-        list.scrollTop = list.scrollHeight;
-    }
-    </script>
+    </footer>
 </body>
 </html>
